@@ -74,8 +74,11 @@ public class Teleop extends OpMode {
         }
         if (gamepad1.x) {
             intake.clawOpen();
-        } else {
+        } else if (gamepad1.b) {
             intake.clawClose();
+        }
+        if(gamepad1.right_stick_button) {
+            setState(1);
         }
 
 
@@ -92,41 +95,11 @@ public class Teleop extends OpMode {
         }
         if (gamepad2.triangle){
             cliprack.clipArmUp();
-        } else if (gamepad2.square) {
+        } else if (gamepad2.x) {
             cliprack.clipArmDown();
         }
 
-        if(gamepad2.left_bumper){
-            timer.reset();
 
-            intake.verticalUp();
-            intake.horizontalPara();
-
-            outtake.horizontalTransfer();
-            outtake.clawOpen();
-            outtake.verticalUp();
-            transferCase = 1;
-
-            while(timer.getTimeSeconds() >= .2 && timer.getTimeSeconds() <= .4) {
-                outtake.setHeightExtensionTarget(10);
-                intakeExtensionTarget = 0;
-                outtake.setRotationTarget(5);
-                transferCase = 2;
-            }
-            intake.verticalTransfer();
-            transferCase = 3;
-
-
-
-            intake.clawOpen();
-            outtake.clawClose();
-
-
-
-
-
-
-        }
 
 
 
@@ -139,6 +112,8 @@ public class Teleop extends OpMode {
         intake.update();
         cliprack.update();
         outtake.update();
+
+        autonomousUpdate();
 
         //All Driving
         follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
@@ -157,4 +132,71 @@ public class Teleop extends OpMode {
 
 
         }
+
+        public void setUpTransferClaws(){
+            intake.verticalUp();
+            intake.horizontalPara();
+            intake.clawClose();
+            outtake.horizontalPara();
+            outtake.clawOpen();
+            outtake.verticalUp();
+        }
+
+        public void setUpTransferSlides(){
+            outtake.setHeightExtensionTarget(30);
+            intakeExtensionTarget = 0;
+            outtake.setRotationTarget(5);
+        }
+
+    void setState(int num) {
+        transferCase = num;
+        timer.reset();
+    }
+
+        public void autonomousUpdate(){
+
+            switch(transferCase){
+                case 0:
+                    break;
+                case 1:
+                    setUpTransferClaws();
+                    setState(2);
+                    break;
+                case 2:
+                    if(timer.getTimeSeconds() > 1) {
+                        setUpTransferSlides();
+                        setState(3);
+                    }
+                    break;
+                case 3:
+                    if(timer.getTimeSeconds() > 1) {
+                        intake.verticalTransfer();
+                        setState(4);
+                    }
+                    break;
+                case 4:
+                    if(timer.getTimeSeconds() > 1) {
+                        outtake.horizontalTransfer();
+                    }  if (timer.getTimeSeconds() > 2){
+                        outtake.clawClose();
+                        setState(5);
+                    }
+                    break;
+                case 5:
+                    if(timer.getTimeSeconds() > 1) {
+                        intake.clawOpen();
+                        outtake.horizontalPara();
+
+                    }
+                     if(timer.getTimeSeconds() > 3){
+                        setState(0);
+                    }
+                    break;
+            }
+
+
+        }
+
+
+
     }

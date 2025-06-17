@@ -24,7 +24,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     //Servo for horizontal rotation
     private static Servo horizontal;
-    private double horizontalTransfer = 0.35;
+    public static double horizontalTransfer = .3;
 
     private double horizontalPara = 0.7;
     public static double horizontalTarget = 0;
@@ -44,7 +44,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     //PDFL for arm raising
     PDFLController heightController;
-    public static double pH = 0.01, dH, fH = -0.1, lH = 0.45;
+    public static double pH = 0.01, dH, fH = .1, lH = 0.45;
 
 
     //Arm on the outtake rotation
@@ -114,6 +114,10 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void setRotationTarget(double degree){
         rotationTarget = (int) (degree * (1260/360));
     }
+
+
+
+
 
 
     public void update(){

@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
     //Servo for vertical rotation
     private static Servo vertical;
     private double verticalDown = 1;
-    private double verticalTransfer = .7;
+    public static double verticalTransfer = .7;
     private double verticalUp = .35;
     public static double verticalTarget = 0;
 
