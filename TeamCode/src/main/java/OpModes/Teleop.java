@@ -7,6 +7,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import Util.Timer;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
@@ -22,7 +23,9 @@ public class Teleop extends OpMode {
 
     OuttakeSubsystem outtake;
 
+    private int transferCase = 0;
 
+    Timer timer;
 
     @Override
     public void init() {
@@ -44,10 +47,15 @@ public class Teleop extends OpMode {
         cliprack.rotateClipStart();
         cliprack.clipArmUp();
 
+        outtake.resetHeightMotor();
         outtake.setHeightExtensionTarget(200);
         outtake.clawOpen();
         outtake.horizontalPara();
         outtake.verticalUp();
+        outtake.resetRotationMotor();
+        outtake.setRotationTarget(10);
+
+        timer = new Timer();
     }
 
     @Override
@@ -88,9 +96,43 @@ public class Teleop extends OpMode {
             cliprack.clipArmDown();
         }
 
+        if(gamepad2.left_bumper){
+            timer.reset();
+
+            intake.verticalUp();
+            intake.horizontalPara();
+
+            outtake.horizontalTransfer();
+            outtake.clawOpen();
+            outtake.verticalUp();
+            transferCase = 1;
+
+            while(timer.getTimeSeconds() >= .2 && timer.getTimeSeconds() <= .4) {
+                outtake.setHeightExtensionTarget(10);
+                intakeExtensionTarget = 0;
+                outtake.setRotationTarget(5);
+                transferCase = 2;
+            }
+            intake.verticalTransfer();
+            transferCase = 3;
+
+
+
+            intake.clawOpen();
+            outtake.clawClose();
+
+
+
+
+
+
+        }
+
+
+
         //Intake extension changing, multiplied by such a small number cause its a servo on a linkage
         intakeExtensionTarget += (gamepad1.left_trigger * .005) - (gamepad1.right_trigger * .005);
-        intakeExtensionTarget = Math.max(Math.min(intakeExtensionTarget, .8), 0);
+        intakeExtensionTarget = Math.max(Math.min(intakeExtensionTarget, .8), .2    );
         intake.setExtensionTarget(intakeExtensionTarget);
 
         //Updaters for all subsystems

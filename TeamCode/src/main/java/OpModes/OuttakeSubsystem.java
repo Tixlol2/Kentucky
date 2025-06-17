@@ -2,6 +2,7 @@ package OpModes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,13 +17,15 @@ public class OuttakeSubsystem extends SubsystemBase {
     //Servo for open and close
     private static Servo grabber;
     private double grabberOpen = 0.4;
-    private double grabberClose = 0.5;
+    private double grabberCloseSoft = 0.5;
+    private double grabberCloseHard = 0.55;
     public static double grabTarget = 0;
 
 
     //Servo for horizontal rotation
     private static Servo horizontal;
-    private double horizontalPerp = 0.35;
+    private double horizontalTransfer = 0.35;
+
     private double horizontalPara = 0.7;
     public static double horizontalTarget = 0;
 
@@ -47,10 +50,10 @@ public class OuttakeSubsystem extends SubsystemBase {
     //Arm on the outtake rotation
     DcMotorEx rotationMotor;
     public static int rotationTarget = 0;
-    public static int rotationTargetMax = 0;
+    public static int rotationTargetMax = 1000;
 
-    private static double pR = 0.0, dR, fR = 0, lR = 0;
-    public static double pRmax = 0.0, dRmax, fRmax = 0.15, lRmax = 0.25;
+    public static double pR = 0.001, dR, fR, lR = 0.2;
+    public static double fRmax = 0.2;
 
     private static PDFLController rotationalController;
     public static double rotationPower = 0;
@@ -75,11 +78,11 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void clawClose(){
-        grabTarget = grabberClose;
+        grabTarget = grabberCloseSoft;
     }
 
-    public void horizontalPerpendicular(){
-        horizontalTarget = horizontalPerp;
+    public void horizontalTransfer(){
+        horizontalTarget = horizontalTransfer;
     }
 
     public void horizontalPara(){
@@ -98,7 +101,19 @@ public class OuttakeSubsystem extends SubsystemBase {
         heightExtensionTarget = num;
     }
 
+    public void resetRotationMotor(){
+        rotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rotationMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
+    public void resetHeightMotor(){
+        heightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        heightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void setRotationTarget(double degree){
+        rotationTarget = (int) (degree * (1260/360));
+    }
 
 
     public void update(){
@@ -110,21 +125,16 @@ public class OuttakeSubsystem extends SubsystemBase {
         heightController.setPDFL(pH, dH, fH, lH);
         heightController.update(heightMotor.getCurrentPosition());
         heightController.setTarget(Math.min(heightExtensionTarget, heightTargetMax));
-        heightMotor.setPower(heightController.runPDFL(15));
+        heightMotor.setPower(-heightController.runPDFL(10));
 
 
         rotationalAngle = rotationMotor.getCurrentPosition() / ((double) 1260 / 360);
-
-
-        pR = pRmax  * Math.sin(Math.toRadians(rotationalAngle));
-        dR = dRmax  * Math.sin(Math.toRadians(rotationalAngle));
-        fR = fRmax * Math.sin(Math.toRadians(rotationalAngle));
-        lR = lRmax * Math.sin(Math.toRadians(rotationalAngle));
+        fR = fRmax * Math.cos(Math.toRadians(rotationalAngle) - Math.PI/2);
 
         rotationalController.setPDFL(pR, dR, fR, lR);
         rotationalController.update(rotationMotor.getCurrentPosition());
         rotationalController.setTarget(Math.min(rotationTargetMax, rotationTarget));
-        rotationMotor.setPower(rotationalController.runPDFL(15));
+        rotationMotor.setPower(rotationalController.runPDFL(10));
 
     }
 
@@ -135,12 +145,20 @@ public class OuttakeSubsystem extends SubsystemBase {
         tele.addLine();
         tele.addData("Outtake Extension Target ", heightExtensionTarget);
         tele.addData("Outtake Extension Reading ", heightMotor.getCurrentPosition());
-        tele.addData("Outtake Extension Power Supplied ", heightController.runPDFL(15));
+        tele.addData("Outtake Extension Power Supplied ", heightController.runPDFL(10));
         tele.addLine();
         tele.addData("Outtake Rotational Target ", rotationTarget);
         tele.addData("Outtake Rotational Reading ", rotationMotor.getCurrentPosition());
         tele.addData("Outtake Rotational Angle Degrees ", rotationalAngle);
-        tele.addData("Outtake Rotational Power Supplied ", rotationalController.runPDFL(15));
+        tele.addData("Outtake Rotational Power Supplied ", rotationalController.runPDFL(10));
+
+
+    }
+
+    public void debugTele(Telemetry tele){
+        tele.addLine();
+        tele.addData("fR ", fR);
+        tele.addData("Direction ", rotationalController.dir);
 
 
     }

@@ -16,6 +16,8 @@ public class PDFLController {
 
     private long time, oldTime;
 
+    public double dir;
+
     /**
      * Constructor for PDFLController.
      * @param p The proportional gain
@@ -36,12 +38,12 @@ public class PDFLController {
      */
     public double runPDFL(int errorMin) {
         double returnVal = (error*p) + (dError*d);
-        double dir = error > 0 ? 1 : error < 0 ? -1 : 0;
+        dir = error > 0 ? 1 : error < 0 ? -1 : 0;
 
-        if (Math.abs(error) < errorMin) return f;
+        if (Math.abs(error) <= errorMin) return f;
 
 
-        return -1 * ((Math.max(Math.abs(l), Math.abs(returnVal))) * dir) + f;
+        return ((Math.max(Math.abs(l), Math.abs(returnVal))) * dir) + f;
     }
 
     /**
