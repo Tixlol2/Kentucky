@@ -6,6 +6,7 @@ import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import Util.CliprackSubsystem;
@@ -15,6 +16,7 @@ import Util.Timer;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
+@Autonomous(name = "Auton", group = "Real")
 public class Auton extends LinearOpMode {
 
     IntakeSubsystem is;
