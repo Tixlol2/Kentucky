@@ -1,15 +1,11 @@
-package OpModes;
+package Util;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
@@ -31,7 +27,7 @@ public class IntakeSubsystem extends SubsystemBase {
     //Servo for vertical rotation
     private static Servo vertical;
     private double verticalDown = 1;
-    public static double verticalTransfer = .7;
+    public static double verticalTransfer = .68;
     private double verticalUp = .35;
     public static double verticalTarget = 0;
 
@@ -80,6 +76,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void setExtensionTarget(double target){
         extensionTarget = target;
+    }
+
+    public void setSetUp(){
+        grabTarget = grabberOpen;
+        horizontalTarget = horizontalPerp;
+        verticalTarget = verticalDown;
+        extensionTarget = 0;
     }
 
 

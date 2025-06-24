@@ -7,6 +7,9 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import Util.CliprackSubsystem;
+import Util.IntakeSubsystem;
+import Util.OuttakeSubsystem;
 import Util.Timer;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -80,6 +83,10 @@ public class Teleop extends OpMode {
         if(gamepad1.right_stick_button) {
             setState(1);
         }
+        if(gamepad1.left_stick_button){
+            setState(6);
+        }
+
 
 
 
@@ -100,6 +107,23 @@ public class Teleop extends OpMode {
         }
 
 
+        if(gamepad2.dpad_left){
+            outtake.setHeightExtensionTarget(500);
+            outtake.verticalDown();
+            cliprack.rotateClipStart();
+        }
+        if(gamepad2.dpad_right){
+            cliprack.raiseRight();
+        }
+        if(gamepad2.left_stick_button){
+            outtake.clawCloseHard();
+            cliprack.rotateClipReady();
+            outtake.setRotationTarget(-30);
+            cliprack.rackDown();
+        }
+        if(gamepad2.right_stick_button){
+            cliprack.rotateClipStop();
+        }
 
 
 
@@ -192,7 +216,31 @@ public class Teleop extends OpMode {
                         setState(0);
                     }
                     break;
+
+
+
+
+                case 6:
+
+                    setState(7);
+                    break;
+                case 7:
+
+                    setState(8);
+                    break;
+                case 8:
+                    if(timer.getTimeSeconds() > .5){
+
+                        setState(9);
+                        break;
+                    }
+
             }
+
+
+
+
+
 
 
         }

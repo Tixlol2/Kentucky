@@ -1,4 +1,4 @@
-package OpModes;
+package Util;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -14,21 +14,22 @@ public class CliprackSubsystem extends SubsystemBase {
 
     //Servo for left of cliprack
     private static Servo leftServo;
-    private double leftUp = 0.3;
-    private double leftDown = .6;
+    private double leftUp = .2;
+    private double leftDown = 1;
     public static double leftTarget = 0;
 
 
     //Servo for right of clip rack
     private static Servo rightServo;
-    private double rightUp = 0.3;
+    private double rightUp = .4;
     private double rightDown = 0;
     public static double rightTarget = 0;
 
     //servo for rotating the clips
     private static Servo clipRotationServo;
-    private double rotationStart = .35;
-    private double rotationStop = .65;
+    public static double rotationStart = 1;
+    public static double rotationReady = .65;
+    public static double rotationStop = .3;
     public static double rotationTarget = .35;
 
     //servo for rotating the clips
@@ -70,6 +71,9 @@ public class CliprackSubsystem extends SubsystemBase {
     public void rotateClipStart(){
         rotationTarget = rotationStart;
     }
+    public void rotateClipReady(){
+        rotationTarget = rotationReady;
+    }
     public void rotateClipStop(){
         rotationTarget = rotationStop;
     }
@@ -79,6 +83,13 @@ public class CliprackSubsystem extends SubsystemBase {
     }
     public void clipArmDown(){
         clipArmTarget = clipArmDown;
+    }
+
+    public void setSetUp(){
+        leftTarget = leftDown;
+        rightTarget = rightDown;
+        rotationTarget = rotationStart;
+        clipArmTarget = clipArmUp;
     }
 
 

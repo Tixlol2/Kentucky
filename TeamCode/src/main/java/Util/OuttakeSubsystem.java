@@ -1,4 +1,4 @@
-package OpModes;
+package Util;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import Util.PDFLController;
 
 @Config
 public class OuttakeSubsystem extends SubsystemBase {
@@ -24,7 +22,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     //Servo for horizontal rotation
     private static Servo horizontal;
-    public static double horizontalTransfer = .3;
+    public static double horizontalTransfer = .28;
 
     private double horizontalPara = 0.7;
     public static double horizontalTarget = 0;
@@ -32,7 +30,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     //Servo for vertical rotation
     private static Servo vertical;
-    private double verticalDown = 1;
+    private double verticalDown = 0;
     private double verticalUp = .35;
     public static double verticalTarget = 0;
 
@@ -81,6 +79,10 @@ public class OuttakeSubsystem extends SubsystemBase {
         grabTarget = grabberCloseSoft;
     }
 
+    public void clawCloseHard(){
+        grabTarget = grabberCloseHard;
+    }
+
     public void horizontalTransfer(){
         horizontalTarget = horizontalTransfer;
     }
@@ -115,7 +117,15 @@ public class OuttakeSubsystem extends SubsystemBase {
         rotationTarget = (int) (degree * (1260/360));
     }
 
-
+    public void setSetUp(){
+        resetRotationMotor();
+        resetHeightMotor();
+        heightExtensionTarget = 300;
+        grabTarget = grabberOpen;
+        horizontalTarget = horizontalTransfer;
+        verticalTarget = verticalDown;
+        rotationTarget = 0;
+    }
 
 
 
