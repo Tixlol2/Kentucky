@@ -51,12 +51,16 @@ public class CliprackSubsystem extends SubsystemBase {
     }
 
     public void rackUp(){
-        Timer timer = new Timer();
-        timer.reset();
-        leftTarget = leftUp;
-        rightTarget = .2;
+        leftTarget = .6;
+        rightTarget = .15;
         clipArmDown();
 
+    }
+
+    public void rackMiddle(){
+        leftTarget = leftUp;
+        rightTarget = rightUp;
+        clipArmUp();
     }
 
     public void rackDown(){
