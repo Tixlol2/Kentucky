@@ -130,13 +130,15 @@ public class Auton extends LinearOpMode {
                 if (!follower.isBusy()) {
                     follower.setMaxPower(1);
                     cs.rackUp();
+                    if(pathTimer.getTimeSeconds() > 1){
                     follower.followPath(goodClips, true);
                     setPathState(3);
+                    }
                 }
                 break;
 
             case 3: // Wait until the robot returns to the scoring position
-                if (!follower.isBusy()) {
+                if (pathTimer.getTimeSeconds() > 1) {
                     cs.rackDown();
                     follower.followPath(goScore, true);
                     setPathState(4);
