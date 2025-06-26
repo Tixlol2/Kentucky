@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.sql.Time;
+
 @Config
 public class CliprackSubsystem extends SubsystemBase {
 
@@ -21,15 +23,15 @@ public class CliprackSubsystem extends SubsystemBase {
 
     //Servo for right of clip rack
     private static Servo rightServo;
-    private double rightUp = .4;
+    private double rightUp = .3;
     private double rightDown = 0;
     public static double rightTarget = 0;
 
     //servo for rotating the clips
     private static Servo clipRotationServo;
     public static double rotationStart = 1;
-    public static double rotationReady = .65;
-    public static double rotationStop = .3;
+    public static double rotationReady = .55;
+    public static double rotationStop = .1;
     public static double rotationTarget = .35;
 
     //servo for rotating the clips
@@ -49,17 +51,22 @@ public class CliprackSubsystem extends SubsystemBase {
     }
 
     public void rackUp(){
+        Timer timer = new Timer();
+        timer.reset();
         leftTarget = leftUp;
-        rightTarget = rightUp;
+        rightTarget = .2;
+        clipArmDown();
+
     }
 
     public void rackDown(){
         leftTarget = leftDown;
         rightTarget = rightDown;
+        clipArmUp();
     }
 
     public void raiseRight(){
-        leftTarget = leftDown;
+        leftTarget = .4;
         rightTarget = rightUp;
     }
 
@@ -86,13 +93,15 @@ public class CliprackSubsystem extends SubsystemBase {
     }
 
     public void setSetUp(){
-        leftTarget = leftDown;
-        rightTarget = rightDown;
-        rotationTarget = rotationStart;
-        clipArmTarget = clipArmUp;
+        rackDown();
+        rotateClipStart();
+        clipArmUp();
     }
 
-
+    public void readyClip(){
+        rackDown();
+        rotateClipStart();
+    }
 
 
 

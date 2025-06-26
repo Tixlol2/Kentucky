@@ -14,31 +14,32 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     //Servo for open and close
     private static Servo grabber;
-    private double grabberOpen = 0.4;
+    private double grabberOpen = 0.3;
     private double grabberCloseSoft = 0.5;
-    private double grabberCloseHard = 0.55;
+    private double grabberCloseHard = 0.6;
     public static double grabTarget = 0;
 
 
     //Servo for horizontal rotation
     private static Servo horizontal;
-    public static double horizontalTransfer = .28;
+    public static double horizontalTransfer = 0;
 
-    private double horizontalPara = 0.7;
-    public static double horizontalTarget = 0;
+    private double horizontalPara = 0.73;
+    public static double horizontalTarget = 0.0;
 
 
     //Servo for vertical rotation
     private static Servo vertical;
     private double verticalDown = 0;
     private double verticalUp = .35;
+    private double verticalTransfer = .15;
     public static double verticalTarget = 0;
 
 
 
     DcMotorEx heightMotor;
     public static int heightExtensionTarget = 0;
-    public static int heightTargetMax = 1700;
+    public int heightTargetMax = 1700;
 
     //PDFL for arm raising
     PDFLController heightController;
@@ -86,6 +87,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void horizontalTransfer(){
         horizontalTarget = horizontalTransfer;
     }
+    public void horizontalCustom(double num){
+        horizontalTarget = num;
+    }
 
     public void horizontalPara(){
         horizontalTarget = horizontalPara;
@@ -97,6 +101,12 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public void verticalUp(){
         verticalTarget = verticalUp;
+    }
+    public void verticalCustom(double num){
+        verticalTarget = num;
+    }
+    public void setVerticalTransfer(){
+        verticalTarget = verticalTransfer;
     }
 
     public void setHeightExtensionTarget(int num){
@@ -116,19 +126,33 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void setRotationTarget(double degree){
         rotationTarget = (int) (degree * (1260/360));
     }
+    public void setRotationTargetActual(int num){rotationTarget = num;}
 
     public void setSetUp(){
-        resetRotationMotor();
         resetHeightMotor();
-        heightExtensionTarget = 300;
-        grabTarget = grabberOpen;
-        horizontalTarget = horizontalTransfer;
-        verticalTarget = verticalDown;
-        rotationTarget = 0;
+        setHeightExtensionTarget(200);
+        clawOpen();
+        horizontalPara();
+        verticalUp();
+        resetRotationMotor();
+        setRotationTarget(10);
     }
 
+    public void prepareScore(){
+        rotationTarget = 350;
+        heightExtensionTarget = 200;
+        clawCloseHard();
+        verticalTarget = 0;
+        horizontalPara();
 
+    }
 
+    public void readyClip(){
+        heightExtensionTarget = 400;
+        clawClose();
+        verticalUp();
+        setRotationTarget(-45);
+    }
 
     public void update(){
 

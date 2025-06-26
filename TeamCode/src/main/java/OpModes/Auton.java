@@ -1,5 +1,7 @@
 package OpModes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -45,24 +47,39 @@ public class Auton extends LinearOpMode {
         cs = new CliprackSubsystem(hardwareMap);
 
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+        follower.setStartingPose(startPose);
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
 
         is.setSetUp();
         os.setSetUp();
         cs.setSetUp();
         buildPaths();
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
 
 
 
-        waitForStart();
+        //INIT
+        while(!isStarted() && !isStopRequested()){
+            is.update();
+            os.update();
+            cs.update();
+            follower.setStartingPose(startPose);
+            telemetry.addData("Status", "Initialized");
+            telemetry.addData("Follower X ", follower.getPose().getX());
+            telemetry.addData("Follower Y ", follower.getPose().getY());
+            telemetry.addData("Follower Heading ", follower.getPose().getHeading());
+            telemetry.update();
+        }
 
-
+        //RUNNING
         while(opModeIsActive() && !isStopRequested()) {
+            follower.update();
             autonomousPathUpdate();
             is.update();
             os.update();
             cs.update();
+            follower.telemetryDebug(telemetry);
+            telemetry.addData("Path State ", pathState);
             telemetry.update();
         }
 
@@ -102,7 +119,7 @@ public class Auton extends LinearOpMode {
                 break;
 
             case 1: // Wait until the robot is near the scoring position
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && gamepad1.left_bumper) {
                     follower.setMaxPower(.3);
                     follower.followPath(getClips, true);
                     setPathState(2);
@@ -120,6 +137,7 @@ public class Auton extends LinearOpMode {
 
             case 3: // Wait until the robot returns to the scoring position
                 if (!follower.isBusy()) {
+                    cs.rackDown();
                     follower.followPath(goScore, true);
                     setPathState(4);
                 }

@@ -13,7 +13,8 @@ public class IntakeSubsystem extends SubsystemBase {
     //Servo for open and close
     private static Servo grabber;
     private double grabberOpen = 0;
-    private double grabberClose = 1;
+    private double grabberClose = .71;
+    private double grabberCloseHard = .9;
     public static double grabTarget = 0;
 
 
@@ -27,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
     //Servo for vertical rotation
     private static Servo vertical;
     private double verticalDown = 1;
-    public static double verticalTransfer = .68;
+    public static double verticalTransfer = .64;
     private double verticalUp = .35;
     public static double verticalTarget = 0;
 
@@ -54,6 +55,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public void clawClose(){
         grabTarget = grabberClose;
     }
+    public void clawCloseHard(){
+        grabTarget = grabberCloseHard;
+    }
 
     public void horizontalPerpendicular(){
         horizontalTarget = horizontalPerp;
@@ -79,10 +83,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void setSetUp(){
-        grabTarget = grabberOpen;
-        horizontalTarget = horizontalPerp;
-        verticalTarget = verticalDown;
-        extensionTarget = 0;
+        clawClose();
+        horizontalPara();
+        verticalUp();
+        setExtensionTarget(0);
     }
 
 
@@ -91,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
         grabber.setPosition(grabTarget);
         horizontal.setPosition(horizontalTarget);
         vertical.setPosition(verticalTarget);
-        extension.setPosition(extensionTarget);
+        extension.setPosition(Math.min(1, Math.max(.2, extensionTarget)));
 
     }
 
