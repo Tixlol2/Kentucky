@@ -165,9 +165,9 @@ public class Teleop extends OpMode {
         }
 
         public void setUpTransferSlides(){
-            outtakeHeighthTarget = 30;
+            outtake.setHeightExtensionTarget(30);
             intakeExtensionTarget = 0;
-            rotationalTarget = 10;
+            outtake.setRotationTargetActual(10);
         }
 
     void setState(int num) {
