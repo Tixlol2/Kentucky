@@ -89,6 +89,12 @@ public class IntakeSubsystem extends SubsystemBase {
         setExtensionTarget(0);
     }
 
+    public void prepIntake(){
+        clawOpen();
+        verticalDown();
+        horizontalPara();
+    }
+
 
     public void update(){
 

@@ -35,6 +35,7 @@ public class Teleop extends OpMode {
     @Override
     public void init() {
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+        follower.setStartingPose(Auton.startPose);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         intake = new IntakeSubsystem(hardwareMap);
         cliprack = new CliprackSubsystem(hardwareMap);
@@ -92,7 +93,7 @@ public class Teleop extends OpMode {
         //GAMEPAD 2 CONTROLS
 
         if(gamepad2.dpad_up){
-            cliprack.rackUp();
+            setState(15);
         } else if (gamepad2.dpad_down){
             cliprack.rackDown();
         }
@@ -113,6 +114,9 @@ public class Teleop extends OpMode {
         }
         if(gamepad2.left_bumper){
             setState(9); //Clipping
+        }
+        if(gamepad2.dpad_left){
+            outtake.neutral();
         }
 
 
@@ -138,7 +142,7 @@ public class Teleop extends OpMode {
         autonomousUpdate();
 
         //All Driving
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, true);
         follower.update();
 
         /* Telemetry Outputs of the Follower */
@@ -239,8 +243,8 @@ public class Teleop extends OpMode {
                     cliprack.rackDown();
                     cliprack.rotateClipReady();
                     setState(0);
-                    break;
                 }
+                break;
 
 
 
@@ -271,7 +275,7 @@ public class Teleop extends OpMode {
                 }
                 break;
             case 13:
-                if(timer.getTimeSeconds() > .5) {
+                if(timer.getTimeSeconds() > .75) {
                     cliprack.clipArmDown();
                     cliprack.rotateClipReady();
                     setState(14);

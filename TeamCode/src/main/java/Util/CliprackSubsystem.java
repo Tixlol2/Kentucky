@@ -51,16 +51,16 @@ public class CliprackSubsystem extends SubsystemBase {
     }
 
     public void rackUp(){
-        leftTarget = .6;
-        rightTarget = .15;
+        leftTarget = leftUp;
+        rightTarget = rightUp;
         clipArmDown();
 
     }
 
     public void rackMiddle(){
-        leftTarget = leftUp;
-        rightTarget = rightUp;
-        clipArmUp();
+        leftTarget = .6;
+        rightTarget = .15;
+
     }
 
     public void rackDown(){

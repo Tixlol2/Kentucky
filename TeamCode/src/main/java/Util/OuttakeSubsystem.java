@@ -147,11 +147,12 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     }
 
-    public void readyClip(){
-        heightExtensionTarget = 400;
+    public void neutral(){
+        heightExtensionTarget = 200;
         clawClose();
         verticalUp();
-        setRotationTarget(-45);
+        horizontalPara();
+        setRotationTarget(30);
     }
 
     public void update(){
