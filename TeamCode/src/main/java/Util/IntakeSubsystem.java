@@ -20,8 +20,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //Servo for horizontal rotation
     private static Servo horizontal;
-    private double horizontalPerp = 0.6;
-    private double horizontalPara = 0.95;
+    public static double horizontalPerp = 0.6;
+    public static double horizontalPara = 0.95;
     public static double horizontalTarget = 0;
 
 
@@ -89,6 +89,10 @@ public class IntakeSubsystem extends SubsystemBase {
         setExtensionTarget(0);
     }
 
+    public void setCustomHorizontal(double target){
+        horizontalTarget = target;
+    }
+
     public void prepIntake(){
         clawOpen();
         verticalDown();
@@ -101,7 +105,7 @@ public class IntakeSubsystem extends SubsystemBase {
         grabber.setPosition(grabTarget);
         horizontal.setPosition(horizontalTarget);
         vertical.setPosition(verticalTarget);
-        extension.setPosition(Math.min(1, Math.max(.2, extensionTarget)));
+        extension.setPosition(Math.min(.8, Math.max(0, extensionTarget)));
 
     }
 

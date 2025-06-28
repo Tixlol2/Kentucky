@@ -15,8 +15,8 @@ public class OuttakeSubsystem extends SubsystemBase {
     //Servo for open and close
     private static Servo grabber;
     private double grabberOpen = 0.3;
-    private double grabberCloseSoft = 0.5;
-    private double grabberCloseHard = 0.6;
+    private double grabberCloseSoft = .47;
+    private double grabberCloseHard = 0.55;
     public static double grabTarget = 0;
 
 
@@ -131,7 +131,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void setSetUp(){
         resetHeightMotor();
         setHeightExtensionTarget(200);
-        clawOpen();
+        clawClose();
         horizontalPara();
         verticalUp();
         resetRotationMotor();
@@ -164,7 +164,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         heightController.setPDFL(pH, dH, fH, lH);
         heightController.update(heightMotor.getCurrentPosition());
         heightController.setTarget(Math.min(heightExtensionTarget, heightTargetMax));
-        heightMotor.setPower(-heightController.runPDFL(10));
+        heightMotor.setPower(-heightController.runPDFL(5));
 
 
         rotationalAngle = rotationMotor.getCurrentPosition() / ((double) 1260 / 360);

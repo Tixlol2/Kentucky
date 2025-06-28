@@ -53,6 +53,7 @@ public class CliprackSubsystem extends SubsystemBase {
     public void rackUp(){
         leftTarget = leftUp;
         rightTarget = rightUp;
+        rotationTarget = .6;
         clipArmDown();
 
     }

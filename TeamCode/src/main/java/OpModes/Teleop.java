@@ -24,6 +24,10 @@ public class Teleop extends OpMode {
     private double outtakeHeighthTarget = 0;
     private double rotationalTarget = 0;
 
+    public static int heightClipping = 280;
+
+    public static int rotationClipping = -160;
+
     CliprackSubsystem cliprack;
 
     OuttakeSubsystem outtake;
@@ -35,7 +39,7 @@ public class Teleop extends OpMode {
     @Override
     public void init() {
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
-        follower.setStartingPose(Auton.startPose);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         intake = new IntakeSubsystem(hardwareMap);
         cliprack = new CliprackSubsystem(hardwareMap);
@@ -53,12 +57,12 @@ public class Teleop extends OpMode {
         cliprack.rotateClipStart();
         cliprack.clipArmUp();
 
-        outtake.resetHeightMotor();
-        outtake.setHeightExtensionTarget(200);
-        outtake.clawOpen();
+        //outtake.resetHeightMotor();
+        outtake.setHeightExtensionTarget(100);
+        outtake.clawClose();
         outtake.horizontalPara();
         outtake.verticalUp();
-        outtake.resetRotationMotor();
+        //outtake.resetRotationMotor();
         outtake.setRotationTarget(10);
 
         timer = new Timer();
@@ -93,7 +97,7 @@ public class Teleop extends OpMode {
         //GAMEPAD 2 CONTROLS
 
         if(gamepad2.dpad_up){
-            setState(15);
+            setState(15); //Rack up
         } else if (gamepad2.dpad_down){
             cliprack.rackDown();
         }
@@ -101,7 +105,7 @@ public class Teleop extends OpMode {
             outtake.clawClose();
         }
         if(gamepad2.y){
-            outtake.prepareScore();
+            outtake.prepareScore(); //Prepare Arm to Score
         }
         if(gamepad2.a){
             outtake.clawOpen();
@@ -116,7 +120,13 @@ public class Teleop extends OpMode {
             setState(9); //Clipping
         }
         if(gamepad2.dpad_left){
-            outtake.neutral();
+            outtake.neutral(); //Set to neutral position
+        }
+
+        if(gamepad2.dpad_right){
+            outtake.setHeightExtensionTarget(1350);
+            outtake.setRotationTargetActual(650);
+            outtake.verticalDown();
         }
 
 
@@ -130,8 +140,8 @@ public class Teleop extends OpMode {
 
 
         //Intake extension changing, multiplied by such a small number cause its a servo on a linkage
-        intakeExtensionTarget += (gamepad1.left_trigger * .01) - (gamepad1.right_trigger * .01);
-        intakeExtensionTarget = Math.max(Math.min(intakeExtensionTarget, .8), .2);
+        intakeExtensionTarget += (gamepad1.left_trigger * .1) - (gamepad1.right_trigger * .1);
+        intakeExtensionTarget = Math.max(Math.min(intakeExtensionTarget, .8), 0);
         intake.setExtensionTarget(intakeExtensionTarget);
 
         //Updaters for all subsystems
@@ -142,7 +152,7 @@ public class Teleop extends OpMode {
         autonomousUpdate();
 
         //All Driving
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, true);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
 
         /* Telemetry Outputs of the Follower */
@@ -161,7 +171,7 @@ public class Teleop extends OpMode {
 
         public void setUpTransferClaws(){
             intake.verticalUp();
-            intake.horizontalPara();
+            intake.horizontalPerpendicular();
             intake.clawClose();
             outtake.horizontalPara();
             outtake.clawOpen();
@@ -169,7 +179,7 @@ public class Teleop extends OpMode {
         }
 
         public void setUpTransferSlides(){
-            outtake.setHeightExtensionTarget(30);
+            outtake.setHeightExtensionTarget(100);
             intakeExtensionTarget = 0;
             outtake.setRotationTargetActual(10);
         }
@@ -191,7 +201,7 @@ public class Teleop extends OpMode {
             case 2:
                 if(timer.getTimeSeconds() > 0) {
                     intake.verticalTransfer();
-                    intake.horizontalPerpendicular();
+                    intake.setCustomHorizontal(.5);
                     setUpTransferSlides();
                     setState(3);
                 }
@@ -213,13 +223,13 @@ public class Teleop extends OpMode {
                 }
                 break;
             case 5:
-                if(timer.getTimeSeconds() > .5) {
+                if(timer.getTimeSeconds() > .75) {
                     intake.clawOpen();
                     outtake.horizontalPara();
 
                 }
-                 if(timer.getTimeSeconds() > .75){
-                     outtake.clawCloseHard();
+                if(timer.getTimeSeconds() > 1){
+                    outtake.clawCloseHard();
                     intake.setSetUp();
                     setState(0);
                 }
@@ -253,36 +263,36 @@ public class Teleop extends OpMode {
                 setState(10);
                 break;
             case 10:
-                if(timer.getTimeSeconds() > .5){
+                if(timer.getTimeSeconds() > 1){
                     outtake.clawCloseHard();
                     outtake.horizontalCustom(.78);
                     cliprack.rotateClipReady();
+                    outtake.setHeightExtensionTarget(heightClipping);
                     setState(11);
                 }
                 break;
             case 11:
-                if(timer.getTimeSeconds() > 1) {
-                    outtake.setHeightExtensionTarget(235);
-                    outtake.setRotationTargetActual(-150);
+                if(timer.getTimeSeconds() > 2) {
+                    outtake.setRotationTargetActual(rotationClipping);
                     outtake.verticalCustom(.7);
                     setState(12);
                 }
                 break;
             case 12:
-                if(timer.getTimeSeconds() > .75) {
+                if(timer.getTimeSeconds() > 2.5) {
                     cliprack.rotateClipStop();
                     setState(13);
                 }
                 break;
             case 13:
-                if(timer.getTimeSeconds() > .75) {
+                if(timer.getTimeSeconds() > 2) {
                     cliprack.clipArmDown();
                     cliprack.rotateClipReady();
                     setState(14);
                 }
                 break;
             case 14:
-                if(timer.getTimeSeconds() > 1) {
+                if(timer.getTimeSeconds() > 2) {
                     outtake.prepareScore();
                     setState(6);
                 }
@@ -295,7 +305,7 @@ public class Teleop extends OpMode {
                 setState(16);
                 break;
             case 16:
-                if(timer.getTimeSeconds() > .5) {
+                if(timer.getTimeSeconds() > .125) {
                     cliprack.rackUp();
                     setState(0);
                 }
